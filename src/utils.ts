@@ -12,9 +12,11 @@ export const circlePoint = (
   cx: number,
   cy: number,
   r: number,
-  a: number
+  a: number,
+  xSign: number = 1,
+  ySign: number = -1  // chosen to match canvas coordinate system directions.
 ): { x: number; y: number } => ({
-  x: cx + r * Math.sin(a),
-  y: cy + r * Math.cos(a),
+  x: cx + xSign * r * Math.cos(a),
+  y: cy + ySign * r * Math.sin(a),
 });
 

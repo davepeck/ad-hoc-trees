@@ -24,10 +24,10 @@ export interface TreeOptions {
 
 /** Default tree options! */
 export const DEFAULT_TREE_OPTIONS = {
-  maxDepth: 8,
-  maxLength: 88,
-  maxWidth: 9,
-  spread: 0.55,
+  maxDepth: 10,
+  maxLength: 71,
+  maxWidth: 10,
+  spread: 0.325,
   seed: 1,
   randomness: 1.0,
 };
@@ -189,7 +189,7 @@ export const drawTree = (
   drawBranch(
     ctx,
     options.maxDepth,
-    Math.PI,
+    Math.PI / 2,
     bounds.width / 2,
     bounds.height,
     options,
