@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Canvas } from "./Canvas";
 import { drawTree } from "./drawTree";
 import { Range } from "./Range";
 import {
   TreeOptions,
-  ELLIE_DEFAULT_TREE_OPTIONS,
+  DEFAULT_TREE_OPTIONS,
   DRAW_TREE_RANGES,
 } from "./drawTree";
+import { SimpleRandom } from "./random";
 
 /** Our primary application. */
 export const App: React.FC = () => {
   const [options, setOptions] = useState<TreeOptions>(
-    ELLIE_DEFAULT_TREE_OPTIONS
+    DEFAULT_TREE_OPTIONS
   );
 
   return (
