@@ -4,16 +4,22 @@ import { SimpleRandom } from "./random";
 /** Options for the tree drawing method! */
 export interface TreeOptions {
   /** The max depth. */
-  maxDepth: number;
+  depth: number;
 
   /** The maximum branch length. */
-  maxLength: number;
+  length: number;
 
   /** The max branch width. */
-  maxWidth: number;
+  width: number;
 
   /** The angle spread in each direction (radians). */
   spread: number;
+
+  /** Length variation. */
+  lengthVariation: number;
+
+  /** Just how curvy should things be? */
+  curviness: number;
 
   /** A random number seed. */
   seed: number;
@@ -23,31 +29,37 @@ export interface TreeOptions {
 }
 
 /** Default tree options! */
-export const DEFAULT_TREE_OPTIONS = {
-  maxDepth: 10,
-  maxLength: 71,
-  maxWidth: 10,
+export const DEFAULT_TREE_OPTIONS: TreeOptions = {
+  depth: 10,
+  length: 71,
+  width: 10,
   spread: 0.325,
+  lengthVariation: 0.25,
+  curviness: 0.2,
   seed: 1,
   randomness: 1.0,
 };
 
 /** Ellie's Default tree options! */
-export const ELLIE_DEFAULT_TREE_OPTIONS = {
-  maxDepth: 15,
-  maxLength: 47,
-  maxWidth: 2,
+export const ELLIE_DEFAULT_TREE_OPTIONS: TreeOptions = {
+  depth: 15,
+  length: 46,
+  width: 2,
   spread: 0.225,
+  lengthVariation: 1.3,
+  curviness: 0,
   seed: 1,
   randomness: 0,
 };
 
 /** Test tree options. */
-export const TEST_DEFAULT_TREE_OPTIONS = {
-  maxDepth: 2,
-  maxLength: 100,
-  maxWidth: 9,
+export const TEST_DEFAULT_TREE_OPTIONS: TreeOptions = {
+  depth: 2,
+  length: 100,
+  width: 9,
   spread: 0.675,
+  lengthVariation: 4,
+  curviness: 0.2,
   seed: 1,
   randomness: 1.0,
 };
@@ -69,19 +81,19 @@ export interface OptionRange {
 
 /** Suggested ranges for all drawing options. */
 export const DRAW_TREE_RANGES: Record<keyof TreeOptions, OptionRange> = {
-  maxDepth: {
+  depth: {
     label: "Depth",
     min: 1,
     max: 15,
     step: 1,
   },
-  maxLength: {
+  length: {
     label: "Length",
     min: 10,
     max: 100,
     step: 1,
   },
-  maxWidth: {
+  width: {
     label: "Width",
     min: 1,
     max: 15,
@@ -92,6 +104,18 @@ export const DRAW_TREE_RANGES: Record<keyof TreeOptions, OptionRange> = {
     min: 0,
     max: Math.PI / 4.0,
     step: 0.025,
+  },
+  lengthVariation: {
+    label: "Length Variation",
+    min: 0.0,
+    max: 1,
+    step: 0.05,
+  },
+  curviness: {
+    label: "Curviness",
+    min: 0,
+    max: 1,
+    step: 0.01,
   },
   seed: {
     label: "Seed",
@@ -146,8 +170,34 @@ const drawLeaf = (
 /** Generate a linear interplation between two points. */
 const linear = (a: number, b: number, t: number) => a * (1 - t) + b * t;
 
-/** Draw a branch of our tree, recursively! */
+/** Draw a curvy branch. */
 const drawBranch = (
+  ctx: CanvasRenderingContext2D,
+  depth: number,
+  angle: number,
+  x: number,
+  y: number,
+  options: TreeOptions,
+  random: SimpleRandom
+): { x: number, y: number } => {
+  const depthPercent = depth / options.depth;
+  const typicalLength = options.length * depthPercent;
+  const randomLength = typicalLength * random.normal(1 - options.lengthVariation, 1 + options.lengthVariation);
+  const length = linear(typicalLength, randomLength, options.randomness);
+  const top = circlePoint(x, y, length, angle);
+  ctx.beginPath();
+  ctx.strokeStyle = "#3c3c3c";
+  ctx.lineCap = "round";
+  ctx.lineWidth = options.width * depthPercent;
+  ctx.moveTo(x, y);
+  ctx.lineTo(top.x, top.y);
+  ctx.stroke();
+  ctx.closePath();
+  return top;
+}
+
+/** Draw a branch of our tree, recursively! */
+const drawTreeRecursive = (
   ctx: CanvasRenderingContext2D,
   depth: number,
   angle: number,
@@ -156,25 +206,18 @@ const drawBranch = (
   options: TreeOptions,
   random: SimpleRandom,
 ) => {
-  const depthPercent = depth / options.maxDepth;
   if (depth > 0) {
-    const top = circlePoint(x, y, options.maxLength * depthPercent, angle);
-    ctx.beginPath();
-    ctx.strokeStyle = "#3c3c3c";
-    ctx.lineCap = "round";
-    ctx.lineWidth = options.maxWidth * depthPercent;
-    ctx.moveTo(x, y);
-    ctx.lineTo(top.x, top.y);
-    ctx.stroke();
-    ctx.closePath();
+    const top = drawBranch(ctx, depth, angle, x, y, options, random);
 
-    if (depth <= 3) {
+    // draw our left and right branches
+    const deviation = linear(options.spread, options.spread * random.uniform(0.5, 1.5), options.randomness);
+    drawTreeRecursive(ctx, depth - 1, angle - deviation, top.x, top.y, options, random);
+    drawTreeRecursive(ctx, depth - 1, angle + deviation, top.x, top.y, options, random);
+
+    // if we're near the top, draw a leaf
+    if (depth <= 2) {
       drawLeaf(ctx, top.x, top.y, options, random);
     }
-
-    const deviation = linear(options.spread, options.spread * random.uniform(0.5, 1.5), options.randomness);
-    drawBranch(ctx, depth - 1, angle - deviation, top.x, top.y, options, random);
-    drawBranch(ctx, depth - 1, angle + deviation, top.x, top.y, options, random);
   }
 };
 
@@ -186,9 +229,9 @@ export const drawTree = (
   const bounds = getBounds(ctx);
   ctx.fillStyle = "#fff";
   ctx.fillRect(0, 0, bounds.width, bounds.height);
-  drawBranch(
+  drawTreeRecursive(
     ctx,
-    options.maxDepth,
+    options.depth,
     Math.PI / 2,
     bounds.width / 2,
     bounds.height,

@@ -51,8 +51,7 @@ export class SimpleRandom {
 
   /** Return an arbitrary random number from [min, max) */
   uniform(min: number, max: number): number {
-    const r = min + this.random() * (max - min);
-    return r;
+    return min + this.random() * (max - min);
   }
 
   /** Use the box-muller algorithm to return numbers from (0, 1) w/ mean 0.5 */
