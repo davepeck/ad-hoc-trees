@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Canvas } from "./canvas";
+import { Canvas } from "./Canvas";
 import { drawTree } from "./drawTree";
-import { Range } from "./range";
-import type { CanvasDrawFunction } from "./useCanvas";
+import { Range } from "./Range";
 import { TreeOptions, ELLIE_TREE_OPTIONS } from "./drawTree";
 
 /** Our primary application. */
