@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "typescript.format.enable": true,
+    "typescript.validate.enable": true,
+    "css.format.enable": true,
+    "html.format.enable": true
+  }
+}

@@ -1,0 +1,32 @@
+.range {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding: 5px 0;
+  font-size: smaller;
+
+  label {
+    flex: 0 0 20%;
+    text-align: left;
+    color: #333;
+  }
+
+  input {
+    background-color: red;
+    flex: 1 0 70%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 1em;
+    text-align: center;
+    margin: 0 5px;
+  }
+
+  .range-value {
+    flex: 0 0 10%;
+    text-align: left;
+    color: #333;
+  }
+};
