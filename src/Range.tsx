@@ -3,8 +3,8 @@ import "./range.scss";
 
 /** Props to a range slider. */
 export interface RangeProps {
-  /** The name for the value. */
-  name: string;
+  /** The label to display for the value. */
+  label: string;
 
   /** The minimum value. */
   min: number;
@@ -24,7 +24,7 @@ export interface RangeProps {
 
 /** A range slider. */
 export const Range: React.FC<RangeProps> = ({
-  name,
+  label,
   min,
   max,
   step,
@@ -41,11 +41,11 @@ export const Range: React.FC<RangeProps> = ({
 
   return (
     <div className="range">
-      <label htmlFor={name}>
-        {name}
+      <label htmlFor={`range-${label}`}>
+        {label}
       </label>
       <input
-        id={name}
+        id={`range-${label}`}
         type="range"
         min={min}
         max={max}
