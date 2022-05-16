@@ -59,3 +59,4 @@ export const Range: React.FC<RangeProps> = ({
     </div>
   );
 };
+

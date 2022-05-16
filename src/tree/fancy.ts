@@ -1,8 +1,8 @@
-import { getBounds, circlePoint } from "./utils";
-import { SimpleRandom } from "./random";
+import { getBounds, circlePoint } from "../utils";
+import { SimpleRandom } from "../random";
 
 /** Options for the tree drawing method! */
-export interface TreeOptions {
+export interface TreeOptions extends Record<string, number> {
   /** The max depth. */
   depth: number;
 
@@ -31,21 +31,21 @@ export interface TreeOptions {
   randomness: number;
 }
 
-/** Default tree options! */
-export const DEFAULT_TREE_OPTIONS: TreeOptions = {
+/** Dave's tree options! */
+export const DAVES_TREE_OPTIONS: TreeOptions = {
   depth: 10,
-  length: 71,
-  width: 10,
+  length: 74,
+  width: 9,
   spread: 0.325,
-  lengthVariation: 0.25,
-  curviness: 0.2,
-  density: 0.03,
-  seed: 1,
+  lengthVariation: 0.35,
+  curviness: 0.43,
+  density: 0.1034,
+  seed: 7,
   randomness: 1.0,
 };
 
-/** Ellie's Default tree options! */
-export const ELLIE_DEFAULT_TREE_OPTIONS: TreeOptions = {
+/** Ellie's tree options! */
+export const ELLIES_TREE_OPTIONS: TreeOptions = {
   depth: 15,
   length: 46,
   width: 2,
@@ -57,21 +57,9 @@ export const ELLIE_DEFAULT_TREE_OPTIONS: TreeOptions = {
   randomness: 0,
 };
 
-/** Test tree options. */
-export const TEST_DEFAULT_TREE_OPTIONS: TreeOptions = {
-  depth: 2,
-  length: 100,
-  width: 9,
-  spread: 0.675,
-  lengthVariation: 4,
-  curviness: 0.2,
-  density: 0.03,
-  seed: 1,
-  randomness: 1.0,
-};
 
-/** Detail about a single tree option's range. */
-export interface OptionRange {
+/** Detail about a single tree range setting. */
+export interface RangeSetting {
   /** The human-readable label for the option. */
   label: string;
 
@@ -85,8 +73,11 @@ export interface OptionRange {
   step: number;
 }
 
+/** Detail about all of a tree's range settings. */
+export type RangeSettings = Record<keyof TreeOptions, RangeSetting>;
+
 /** Suggested ranges for all drawing options. */
-export const DRAW_TREE_RANGES: Record<keyof TreeOptions, OptionRange> = {
+export const TREE_RANGE_SETTINGS: RangeSettings = {
   depth: {
     label: "Depth",
     min: 1,
