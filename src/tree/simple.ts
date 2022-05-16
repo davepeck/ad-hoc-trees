@@ -53,7 +53,7 @@ export const TREE_RANGE_SETTINGS: RangeSettings = {
 };
 
 /** Draw a branch of our tree, recursively! */
-const drawTreeRecursive = (
+const drawBranch = (
   ctx: CanvasRenderingContext2D,
   depth: number,
   angle: number,
@@ -61,34 +61,18 @@ const drawTreeRecursive = (
   y: number,
   options: TreeOptions
 ) => {
+  const depthPercent = depth / options.depth;
   if (depth > 0) {
-    const depthPercent = depth / options.depth;
-    const top = circlePoint(x, y, options.length, angle);
+    const top = circlePoint(x, y, options.length * depthPercent, angle);
     ctx.beginPath();
-    ctx.lineWidth = options.width * depthPercent;
     ctx.strokeStyle = "#fff";
-    ctx.lineCap = "round";
+    ctx.lineWidth = options.width * depthPercent;
     ctx.moveTo(x, y);
     ctx.lineTo(top.x, top.y);
     ctx.stroke();
     ctx.closePath();
-
-    drawTreeRecursive(
-      ctx,
-      depth - 1,
-      angle - options.spread,
-      top.x,
-      top.y,
-      options
-    );
-    drawTreeRecursive(
-      ctx,
-      depth - 1,
-      angle + options.spread,
-      top.x,
-      top.y,
-      options
-    );
+    drawBranch(ctx, depth - 1, angle - options.spread, top.x, top.y, options);
+    drawBranch(ctx, depth - 1, angle + options.spread, top.x, top.y, options);
   }
 };
 
@@ -100,12 +84,6 @@ export const drawTree = (
   const bounds = getBounds(ctx);
   ctx.fillStyle = "#00f";
   ctx.fillRect(0, 0, bounds.width, bounds.height);
-  drawTreeRecursive(
-    ctx,
-    options.depth,
-    Math.PI / 2,
-    bounds.width / 2,
-    bounds.height,
-    options
-  );
+  drawBranch(ctx, options.depth, Math.PI / 2, bounds.width / 2, bounds.height, options);
 };
+
