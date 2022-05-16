@@ -5,8 +5,6 @@ const resizeCanvasContext = (context: CanvasRenderingContext2D): void => {
   const canvas = context.canvas;
   const { width, height } = canvas.getBoundingClientRect();
 
-  console.log("Target width/height: ", width, height);
-
   if (canvas.width !== width || canvas.height !== height) {
     const { devicePixelRatio: ratio = 1 } = window;
     canvas.width = width * ratio;
